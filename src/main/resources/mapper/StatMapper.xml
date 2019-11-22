@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jungle.hotmap.mapper.StatMapper">
+  <resultMap id="BaseResultMap" type="com.jungle.hotmap.domain.Stat">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="time" jdbcType="BIGINT" property="time" />
+    <result column="latitude" jdbcType="DOUBLE" property="latitude" />
+    <result column="longitude" jdbcType="DOUBLE" property="longitude" />
+  </resultMap>
+
+  <select id="selectTest" resultType="Stat">
+        SELECT
+          longitude,
+          latitude,
+          count(*)
+        FROM
+          stat
+        group by
+          longitude,
+          latitude
+
+    </select>
+
+  <select id="queryByunitclass"  resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM stat
+    </select>
+
+  <select id="selectRight" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+          longitude as lng,
+          latitude as lat,
+          count(*) as count
+        FROM
+          stat
+        group by
+          longitude,
+          latitude
+
+    </select>
+
+    <select id="selectMercury" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+          latitude as lng,
+          longitude as lat,
+          mercury as count
+        FROM
+          pollution
+        where times=1571587200000
+
+    </select>
+
+    <select id="selectTimes" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+          distinct times as timestamp
+        FROM
+          pollution
+    </select>
+
+<!--    <select id="selectPollution" resultType="com.alibaba.fastjson.JSONObject">-->
+<!--        SELECT-->
+<!--          *-->
+<!--        FROM-->
+<!--          pollution-->
+<!--        where times=#{times}-->
+<!--    </select>-->
+
+    <!-- 根据指定ID获取指定数据表的指定字段的数据集 -->
+    <select id="selectPollution" resultType="java.util.Map" statementType="STATEMENT" >
+        select
+          latitude as lng,
+          longitude as lat,
+          ${fields} as count
+        from pollution
+         where times=${times}
+    </select>
+    <select id="selectName" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+          distinct name
+        FROM
+          pollution
+    </select>
+
+    <select id="selectLine" resultType="java.util.Map" statementType="STATEMENT" >
+        select
+          times,
+          ${substance} as count
+        from pollution
+         where times between ${startime} and ${stoptime} and name=${site}
+    </select>
+
+</mapper>

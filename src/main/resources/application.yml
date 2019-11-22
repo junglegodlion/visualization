@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: hotmap
+  thymeleaf:
+    cache: false # 开发时关闭缓存,不然没法看到实时页面
+    mode: HTML # 用非严格的 HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.1.18:9906/soil?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 600000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+mybatis:
+  # 实体类的存放路径
+  type-aliases-package: com.jungle.hotmap.domain
+  mapper-locations: classpath:mapper/*.xml
+
+server:
+  port: 9090
+#  上下文路径
+  servlet:
+    context-path: /map
+
+logging:
+  file: ../logs/hotmap.log
+  level.org.springframework.web: DEBUG

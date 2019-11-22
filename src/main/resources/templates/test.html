@@ -1,0 +1,145 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>test</title>
+
+    <!-- 引入 ECharts 文件 -->
+    <script src="js/echarts.min.js"></script>
+</head>
+<body>
+<div style="text-align: center;">
+    <span class="location"> 折线图 </span> <br>
+    <div style="display: inline-block">
+        <!--        <span class="location"> 地点: </span>-->
+        <select  id="siteid" οnchange="selectcity()">
+            <option>---请选择地区---</option>
+        </select>
+    </div>
+    <div style="display: inline-block">
+        <!--        <span class="location"> 地点: </span>-->
+        <select  id="startid" οnchange="selectcity()">
+            <option>---请选择起始日期---</option>
+        </select>
+    </div>
+    <div style="display: inline-block">
+        <!--        <span class="location"> 地点: </span>-->
+        <select  id="stopid" οnchange="selectcity()">
+            <option>---请选择终止日期---</option>
+        </select>
+    </div>
+    <div style="display: inline-block">
+        <select  id="pollutionid" οnchange="selectcity()">
+            <option>---请选择物质---</option>
+            <option>铅</option>
+            <option>石油</option>
+            <option>汞</option>
+        </select>
+    </div>
+
+
+    <!-- 按钮 -->
+    <div style="display: inline-block">
+        <button type="button" id="btn_submit" onclick="btn()"> 查询 </button>
+    </div>
+
+</div>
+
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="main" style="width: 600px;height:400px;position: absolute; top:50%; left: 50%; margin-top: -200px;margin-left: -300px"></div>
+
+
+<!--<script type="text/javascript">-->
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script th:inline="javascript">
+
+    function btn(){
+        var result1=$("#siteid").val();
+        var result2=$("#startid").val();
+        var result3=$("#stopid").val();
+        var result4=$("#pollutionid").val();
+        $.ajax({
+            type: "POST",
+            url: "/map/line",
+            dataType: 'json',
+            data:{
+                siteid:result1,
+                startid:result2,
+                stopid:result3,
+                pollutionid:result4
+            },
+            async: false,
+            success: function(result) {
+                var list1=new Array();
+                var list2= new Array();
+                for (var i = 0;i < result.length; ++i) {
+                    console.log(result[i])
+                    console.log(result[i]["times"])
+                    console.log(result[i]["count"])
+                    list1[i] = result[i]["times"];
+                    list2[i] = result[i]["count"];
+                }
+                 option = {
+                    xAxis: {
+                        type: 'category',
+                        data: list1
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: list2,
+                        type: 'line'
+                    }]
+                };
+                myChart.setOption(option);
+
+            }
+        })
+    }
+    <!-- 为下拉框赋值 -->
+    $(document).ready(function () {
+        $.get('/map/location',function (result) {
+            console.log(result);
+            for (var i = 0;i < result.length; ++i) {
+                $("#startid").prepend("<option value="+ result[i] +">"+ result[i] +"</option>");
+                $("#stopid").prepend("<option value="+ result[i] +">"+ result[i] +"</option>");
+            }
+
+        })
+    });
+
+    $(document).ready(function () {
+        $.get('/map/site',function (result) {
+            console.log(result);
+            for (var i = 0;i < result.length; ++i) {
+                $("#siteid").prepend("<option value="+ result[i] +">"+ result[i] +"</option>");
+            }
+
+        })
+    });
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    // var option = {
+    //     xAxis: {
+    //         type: 'category',
+    //         data: ""
+    //     },
+    //     yAxis: {
+    //         type: 'value'
+    //     },
+    //     series: [{
+    //         data: "",
+    //         type: 'line'
+    //     }]
+    // };
+
+
+    // 使用刚指定的配置项和数据显示图表。
+
+</script>
+</body>
+</html>
